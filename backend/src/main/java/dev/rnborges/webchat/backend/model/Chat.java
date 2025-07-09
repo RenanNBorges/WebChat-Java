@@ -1,4 +1,4 @@
-package model;
+package dev.rnborges.webchat.backend.model;
 
 
 import jakarta.persistence.*;

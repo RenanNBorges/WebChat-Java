@@ -1,6 +1,6 @@
-package repository;
+package dev.rnborges.webchat.backend.repository;
 
-import model.Message;
+import dev.rnborges.webchat.backend.model.Message;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,9 +1,6 @@
 package dev.rnborges.webchat.backend.repository;
 
-import model.Chat;
-import model.Message;
-import model.User;
-import model.UserStatus;
+import dev.rnborges.webchat.backend.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,9 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import repository.ChatRepository;
-import repository.MessageRepository;
-import repository.UserRepository;
 
 import java.util.Comparator;
 
@@ -42,12 +36,12 @@ public class MessageRepositoryTest {
         chat = chatRepository.save(Chat.builder().isGroup(false).build());
 
         // Criamos 3 mensagens para o mesmo chat
-        messageRepository.save(Message.builder().chat(chat).sender(user).content("Primeira mensagem").build());
+        messageRepository.save(Message.builder().chat(chat).sender(user).content("Primeira mensagem").status(MessageStatus.DELIVERED).build());
         // Adicionamos um pequeno delay para garantir timestamps diferentes, embora o Hibernate gerencie isso.
         try { Thread.sleep(10); } catch (InterruptedException ignored) {}
-        messageRepository.save(Message.builder().chat(chat).sender(user).content("Segunda mensagem").build());
+        messageRepository.save(Message.builder().chat(chat).sender(user).content("Segunda mensagem").status(MessageStatus.DELIVERED).build());
         try { Thread.sleep(10); } catch (InterruptedException e) {}
-        messageRepository.save(Message.builder().chat(chat).sender(user).content("Terceira mensagem").build());
+        messageRepository.save(Message.builder().chat(chat).sender(user).content("Terceira mensagem").status(MessageStatus.DELIVERED).build());
     }
 
     @Test
@@ -70,7 +64,7 @@ public class MessageRepositoryTest {
     @DisplayName("Deve retornar mensagens ordenadas por data de envio decrescente")
     void deveRetornarMensagensOrdenadasPorDataDesc() {
         // Arrange: Queremos todos os 3 itens, ordenados por 'sentAt' de forma decrescente
-        Pageable pageable = PageRequest.of(0, 3, Sort.by("sentAt").descending());
+        Pageable pageable = PageRequest.of(0, 3, Sort.by("timestamp").descending());
 
         // Act
         Page<Message> resultPage = messageRepository.findByChatId(chat.getId(), pageable);

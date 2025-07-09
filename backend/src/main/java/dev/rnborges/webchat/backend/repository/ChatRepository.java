@@ -1,7 +1,6 @@
-package repository;
+package dev.rnborges.webchat.backend.repository;
 
-import model.Chat;
-import model.ChatMember;
+import dev.rnborges.webchat.backend.model.Chat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,4 +1,4 @@
-package model;
+package dev.rnborges.webchat.backend.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,7 +18,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User {
-    @jakarta.persistence.Id
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

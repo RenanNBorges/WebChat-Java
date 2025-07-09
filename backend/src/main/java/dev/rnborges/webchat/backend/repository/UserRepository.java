@@ -1,6 +1,6 @@
-package repository;
+package dev.rnborges.webchat.backend.repository;
 
-import model.User;
+import dev.rnborges.webchat.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

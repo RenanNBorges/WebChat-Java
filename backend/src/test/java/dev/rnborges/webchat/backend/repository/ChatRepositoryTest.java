@@ -1,17 +1,14 @@
 package dev.rnborges.webchat.backend.repository;
 
-import model.Chat;
-import model.ChatMember;
-import model.User;
-import model.UserStatus;
+import dev.rnborges.webchat.backend.model.Chat;
+import dev.rnborges.webchat.backend.model.ChatMember;
+import dev.rnborges.webchat.backend.model.User;
+import dev.rnborges.webchat.backend.model.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import repository.ChatMemberRepository;
-import repository.ChatRepository;
-import repository.UserRepository;
 
 import java.util.List;
 
