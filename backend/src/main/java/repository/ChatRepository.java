@@ -13,5 +13,5 @@ import java.util.UUID;
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, UUID> {
     @Query("SELECT c FROM Chat c JOIN c.members m WHERE m.user.id = :userID")
-    List<ChatMember> findByUser(@Param("userID") UUID userID);
+    List<Chat> findChatsByUserId(@Param("userID") UUID userID);
 }

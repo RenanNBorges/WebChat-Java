@@ -32,7 +32,7 @@ public class Message {
     private User sender;
 
     @Column(columnDefinition = "Text", nullable = false)
-    private String message;
+    private String content;
 
     @CreationTimestamp
     @Column(updatable = false)

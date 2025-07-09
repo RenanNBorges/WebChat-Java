@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID> {
-    Page<Message> findByUser_Id(UUID userId, Pageable pageable);
+    Page<Message> findByChatId(UUID userId, Pageable pageable);
 }
