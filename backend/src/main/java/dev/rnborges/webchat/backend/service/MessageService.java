@@ -26,6 +26,14 @@ public class MessageService {
      */
     @Transactional(readOnly = true)
     public Message saveMessage(ChatMessage chatMessage, User sender, Chat chat) {
+        boolean isMember = chat.getMembers().stream()
+                .anyMatch(member -> member.getUser().getId()
+                        .equals(
+                                sender.getId()));
+
+        if (!isMember) {
+            throw new SecurityException("User is not a member of chat and cannot send messages.");
+        }
         Message message = Message.builder()
                 .chat(chat)
                 .sender(sender)
