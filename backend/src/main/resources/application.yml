@@ -1,7 +1,5 @@
 server:
   port: 8080
-  servlet:
-    context-path: /api
 
 spring:
   application:
@@ -43,7 +41,7 @@ spring:
 
   security:
     jwt:
-      secret: mySecretKeyForWebChatApplication2024
+      secret: bDRPOXpKOHBHLWhXYlZuWW1YcVp0N3cxeFI0Z0NfZUYyb0s1c042dUkxRT0=
       expiration: 86400000 # 24 horas
 
 logging:

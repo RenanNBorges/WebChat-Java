@@ -24,7 +24,7 @@ public class JwtTokenProvider {
 
 
     @Value("${spring.security.jwt.expiration}")
-    private String jwtExpirationMs;
+    private Long jwtExpirationMs;
 
 
     // Generate JWT to auth user
@@ -38,7 +38,7 @@ public class JwtTokenProvider {
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(getSignInKey(),SignatureAlgorithm.ES256)
+                .signWith(getSignInKey())
                 .compact();
     }
 

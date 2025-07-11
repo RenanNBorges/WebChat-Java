@@ -1,5 +1,6 @@
 package dev.rnborges.webchat.backend.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +33,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         body.put("error", authException.getMessage());
         body.put("message", authException.getMessage());
-        body.put("path", request.ServletPath());
+        body.put("path", request.getServletPath());
+
+        // ObjectMapper to JSON
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(response.getOutputStream(), body);
     }
 }
