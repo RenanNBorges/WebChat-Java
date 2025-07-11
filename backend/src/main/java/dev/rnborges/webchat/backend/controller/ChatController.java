@@ -56,7 +56,7 @@ public class ChatController {
 
         messageService.saveMessage(chatMessage, sender, chat);
 
-        String destination = "/topic/chat" + chat.getId();
+        String destination = "/topic/chat/" + chat.getId();
 
         messagingTemplate.convertAndSend(destination, chatMessage);
 
@@ -76,7 +76,7 @@ public class ChatController {
         chatMessage.setType(MessageType.JOIN);
         chatMessage.setContent(principal.getName() + " joined chat!");
 
-        String destination = "/topic/chat" + chatMessage.getChatId();
+        String destination = "/topic/chat/" + chatMessage.getChatId();
         messagingTemplate.convertAndSend(destination, chatMessage);
     }
 

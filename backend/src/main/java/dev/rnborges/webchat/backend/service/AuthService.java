@@ -2,6 +2,8 @@ package dev.rnborges.webchat.backend.service;
 
 import dev.rnborges.webchat.backend.dto.LoginRequest;
 import dev.rnborges.webchat.backend.dto.RegisterRequest;
+import dev.rnborges.webchat.backend.model.Chat;
+import dev.rnborges.webchat.backend.model.ChatMember;
 import dev.rnborges.webchat.backend.model.User;
 import dev.rnborges.webchat.backend.model.UserStatus;
 import dev.rnborges.webchat.backend.repository.UserRepository;
@@ -13,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +56,8 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    ;
+
+
 
     /**
      * Autentica um usuário e retorna um token JWT.

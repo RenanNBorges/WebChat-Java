@@ -1,16 +1,17 @@
 package dev.rnborges.webchat.backend.controller;
 
+import dev.rnborges.webchat.backend.dto.ChatRequest;
 import dev.rnborges.webchat.backend.dto.ChatResponse;
 import dev.rnborges.webchat.backend.model.Chat;
 import dev.rnborges.webchat.backend.model.User;
 import dev.rnborges.webchat.backend.service.ChatService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,25 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ChatRestController {
     private final ChatService chatService;
+
+    /**
+     * Creates a new chat (private or group).
+     * @param chatRequest The request body containing the chat details.
+     * @param currentUser The currently authenticated user, who will be the creator.
+     * @return A response entity with the data of the newly created chat.
+     */
+    @PostMapping
+    public ResponseEntity<ChatResponse> createChat(
+            @Valid @RequestBody ChatRequest chatRequest,
+            @AuthenticationPrincipal User currentUser
+    ) {
+
+        Chat createdChat = chatService.createChat(chatRequest, currentUser);
+        log.info("User {} is creating a new chat with name '{}' and ID: {}", currentUser.getUsername(), createdChat.getName(), createdChat.getId());
+
+        // Return a 201 Created status, which is the REST standard for successful resource creation.
+        return new ResponseEntity<>(ChatResponse.fromEntity(createdChat), HttpStatus.CREATED);
+    }
 
     /**
      * Fetches all chats (groups and private) for the currently authenticated user.
