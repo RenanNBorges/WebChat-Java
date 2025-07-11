@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15 # Imagem oficial do PostgreSQL
+    container_name: webchat-postgres
+    environment:
+      POSTGRES_DB: webchat # Nome do banco a ser criado
+      POSTGRES_USER: webchat # Usuário
+      POSTGRES_PASSWORD: webchat123 # Senha
+    ports:
+      - "5432:5432" # Mapeia a porta do container para a máquina host
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persiste os dados do banco
+    networks:
+      - webchat-network
+    healthcheck: # Verifica se o banco está pronto para aceitar conexões
+      test: ["CMD-SHELL", "pg_isready -U webchat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Serviço de Cache em Memória
+  redis:
+    image: redis:7-alpine # Imagem oficial e leve do Redis
+    container_name: webchat-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data # Persiste dados do Redis (opcional)
+    networks:
+      - webchat-network
+    healthcheck: # Verifica se o Redis está respondendo
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Serviço de Mensageria
+  rabbitmq:
+    image: rabbitmq:3-management # Imagem com a interface de gerenciamento incluída
+    container_name: webchat-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: webchat
+      RABBITMQ_DEFAULT_PASS: webchat123
+    ports:
+      - "5672:5672" # Porta do protocolo AMQP
+      - "15672:15672" # Porta da interface de gerenciamento web
+    networks:
+      - webchat-network
+    healthcheck: # Verifica se o RabbitMQ está funcional
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+
+networks:
+  webchat-network:
+    driver: bridge
