@@ -1,20 +1,18 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom'
+import RegisterPage from './components/Auth/Register.jsx'
+import LoginPage from "./components/Auth/Login.jsx";
 
-// TESTE: componentes de placeholder
-const LoginPage = () => <h1>Página de Login</h1>;
-const RegisterPage = () => <h1>Página de Registo</h1>;
-const ChatPage = () => <h1>Página Principal do Chat</h1>;
+// TODO: Eu vou criar estes componentes de página a seguir.
+const ChatPage = () => <h1>Página de Chat</h1>;
 
 function App() {
     return (
         <Routes>
-            {/* Garanta que esta linha está correta e que ChatPage é um componente válido */}
-            <Route path="/" element={<ChatPage />} />
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage/>} />
+            <Route path="/" element={<ChatPage />} />
         </Routes>
-    );
+    )
 }
 
-export default App;
+export default App

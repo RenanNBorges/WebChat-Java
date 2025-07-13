@@ -1,25 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer components {
-  .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors;
-  }
-
-  .btn-primary {
-    @apply bg-primary-500 text-white hover:bg-primary-600;
-  }
-
-  .btn-secondary {
-    @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
-  }
-
-  .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500;
-  }
-
-  .card {
-    @apply bg-white rounded-lg shadow-md border border-gray-200;
-  }
+@theme {
+    --bg-light-green-nav: #F5FFFF;
+    --color-green-font: #73C2A9;
+    --color-green-strong: #37B29E;
 }

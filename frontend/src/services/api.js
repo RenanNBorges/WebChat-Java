@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {API_BASE_URL, API_URL} from '../utils/constants';
+import { API_BASE_URL } from '../utils/constants'; // 1. Importar a nossa constante
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -8,21 +8,20 @@ const apiClient = axios.create({
     },
 });
 
+/**
+ * Interceptor de requisição para adicionar automaticamente o token JWT.
+ * TODO: Eu vou implementar a lógica para ler o token do localStorage
+ * e adicioná-lo ao cabeçalho de todas as requisições protegidas.
+ */
 apiClient.interceptors.request.use(
     (config) => {
-        // 1. Get the token from localStorage on every request.
         const token = localStorage.getItem('token');
-
-        // 2. If the token exists, add it to the request headers.
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
-
-        // 3. The request configuration must be returned for the request to proceed.
         return config;
     },
     (error) => {
-        // 4. If there's an error in setting up the request, reject the promise.
         return Promise.reject(error);
     }
 );
