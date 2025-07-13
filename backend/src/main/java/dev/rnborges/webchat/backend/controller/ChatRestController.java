@@ -36,7 +36,7 @@ public class ChatRestController {
     ) {
 
         Chat createdChat = chatService.createChat(chatRequest, currentUser);
-        log.info("User {} is creating a new chat with name '{}' and ID: {}", currentUser.getUsername(), createdChat.getName(), createdChat.getId());
+        log.info("User {} is creating a new chat group: {} with name '{}' and ID: {}", createdChat.isGroup(), currentUser.getUsername(), createdChat.getName(), createdChat.getId());
 
         // Return a 201 Created status, which is the REST standard for successful resource creation.
         return new ResponseEntity<>(ChatResponse.fromEntity(createdChat), HttpStatus.CREATED);

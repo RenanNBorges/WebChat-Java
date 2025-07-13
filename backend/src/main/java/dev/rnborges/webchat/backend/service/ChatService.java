@@ -10,6 +10,7 @@ import dev.rnborges.webchat.backend.repository.ChatRepository;
 import dev.rnborges.webchat.backend.repository.MessageRepository;
 import dev.rnborges.webchat.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -71,6 +72,10 @@ public class ChatService {
             memberIds.add(creator.getId());
         }
 
+        System.out.println(STR."""
+\{createRequest.getName()}
+\{createRequest.isGroup()}
+""");
         List<User> members = userRepository.findAllById(memberIds);
         if(members.size() != memberIds.size()) {
             throw new IllegalArgumentException("Member Ids provide are invalid.");
@@ -92,6 +97,8 @@ public class ChatService {
                         .isAdmin(member.getId().equals(creator.getId()))
                         .build())
                 .collect(Collectors.toList());
+
+ //       log.info("Creating a new chat, params:\nName: {}\nisGroup: {}",savedChat.getName(), savedChat.isGroup() );
 
         chatMemberRepository.saveAll(chatMembers);
 
