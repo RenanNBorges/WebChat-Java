@@ -5,9 +5,9 @@ spring:
   application:
     name: webchat-backend
 
-  profiles:
-    active: dev
+  # ❌ A secção "profiles: active: dev" foi removida daqui para evitar conflitos.
 
+  # Configurações padrão que podem ser sobrescritas pelos perfis.
   datasource:
     url: jdbc:postgresql://localhost:5432/webchat
     username: postgres
@@ -20,7 +20,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # A propriedade do dialeto foi removida, pois o Spring Boot a deteta automaticamente.
         format_sql: true
 
   redis:
@@ -69,7 +69,7 @@ app:
     message-history-limit: 1000
 
 ---
-# Profile para desenvolvimento
+# Profile para desenvolvimento (ativado ao correr localmente sem especificar um perfil)
 spring:
   config:
     activate:
@@ -95,3 +95,20 @@ spring:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
+
+---
+# ✅ Profile Docker Corrigido
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    # Usa as variáveis de ambiente fornecidas pelo docker-compose.yml
+    # O host é 'postgres', o nome do serviço no Docker.
+    url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:webchat}
+    username: ${DB_USERNAME:webchat}
+    password: ${DB_PASSWORD:webchat123}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # 'update' é uma boa estratégia para o ambiente Docker.

@@ -1,0 +1,66 @@
+/*
+  Estilos para o nosso componente de fundo de campo de jogo.
+*/
+.field-background {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #C9F6B9;
+    background-image:
+            linear-gradient(rgba(255, 255, 255, 0.05) 50%, transparent 50%),
+            linear-gradient(0deg, rgba(255, 255, 255, 0.05) 50%, transparent 50%);
+    background-size: 50px 50px;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+/* O resto das classes permanece o mesmo, pois são genéricas */
+.center-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.center-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20%;
+    padding-bottom: 20%;
+    border: 15px solid rgba(255, 255, 255, 0.8);
+    border-radius: 100%;
+}
+
+.penalty-box {
+    position: absolute;
+    top: 20%;
+    width: 20%;
+    height: 60%;
+    border: 15px solid rgba(255, 255, 255, 0.8);
+    border-radius: 5%;
+}
+
+.goal-area {
+    position: absolute;
+    top: 35%;
+    width: 10%;
+    height: 30%;
+    border: 15px solid rgba(255, 255, 255, 0.8);
+    border-radius: 5%;
+}
+
+.penalty-box.left, .goal-area.left {
+    left: 0;
+    border-left: none;
+}
+
+.penalty-box.right, .goal-area.right {
+    right: 0;
+    border-right: none;
+}

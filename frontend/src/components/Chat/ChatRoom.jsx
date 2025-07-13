@@ -1,33 +1,38 @@
 import React from 'react';
+import FieldBackground from './FieldBackground';
+import ChatRoomHeader from './ChatRoomHeader';
+import MessageList from './MessageList';
+import MessageInput from './MessageInput';
 
-/**
- * A área principal que exibe a conversa ativa.
- * @param {object} props
- * @param {object} props.selectedChat - O objeto do chat que foi selecionado.
- * @returns {JSX.Element}
- */
 const ChatRoom = ({ selectedChat }) => {
-    // Se nenhum chat estiver selecionado, exibe uma mensagem de boas-vindas.
     if (!selectedChat) {
         return (
             <div className="flex flex-col flex-auto h-full p-6">
-                <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4 items-center justify-center">
-                    <p className="text-xl text-gray-500">Selecione uma conversa para começar</p>
-                    <p className="text-sm text-gray-400">Pode escolher uma "Equipe" ou um colega no "Vestiário".</p>
-                </div>
+                <FieldBackground>
+                    <div className="flex flex-col h-full items-center justify-center text-white">
+                        <h2 className="text-2xl font-bold bg-black opacity-30 p-10 rounded-2xl">Bem-vindo ao Foot Chat!</h2>
+                        <p className="text-lg text-gray-200 bg-black opacity-15 p-5 rounded-2xl">Selecione uma conversa para começar</p>
+                    </div>
+                </FieldBackground>
             </div>
         );
     }
 
-    // Se um chat estiver selecionado, exibe o seu nome.
     return (
         <div className="flex flex-col flex-auto h-full p-6">
-            <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4">
-                {/* TODO: Eu vou substituir isto pelo ChatRoomHeader, MessageList, e MessageInput. */}
-                <div className="text-center font-bold text-xl">
-                    {selectedChat.name}
+            <FieldBackground>
+                <div className="flex flex-col h-full">
+                    <ChatRoomHeader chatName={selectedChat.name} />
+
+                    <div className="flex-grow h-0 overflow-y-auto">
+                        <MessageList chat={selectedChat} />
+                    </div>
+
+                    <div className="p-4">
+                        <MessageInput />
+                    </div>
                 </div>
-            </div>
+            </FieldBackground>
         </div>
     );
 };

@@ -72,10 +72,6 @@ public class ChatService {
             memberIds.add(creator.getId());
         }
 
-        System.out.println(STR."""
-\{createRequest.getName()}
-\{createRequest.isGroup()}
-""");
         List<User> members = userRepository.findAllById(memberIds);
         if(members.size() != memberIds.size()) {
             throw new IllegalArgumentException("Member Ids provide are invalid.");

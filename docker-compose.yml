@@ -54,6 +54,35 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      
+     # Backend Spring Boot
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    # Esta secção de environment é crucial
+    environment:
+      # 1. Ativa o perfil 'docker' no nosso application.yml
+      - SPRING_PROFILES_ACTIVE=docker 
+      # 2. Fornece as variáveis que o perfil 'docker' espera
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=webchat
+      - DB_USERNAME=webchat
+      - DB_PASSWORD=webchat123
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=webchat
+      - RABBITMQ_PASSWORD=webchat123
+    networks:
+      - webchat-network
+
 
 volumes:
   postgres_data:
