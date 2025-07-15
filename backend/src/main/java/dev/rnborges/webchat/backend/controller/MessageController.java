@@ -1,6 +1,7 @@
 package dev.rnborges.webchat.backend.controller;
 
 import dev.rnborges.webchat.backend.dto.MessageResponse;
+import dev.rnborges.webchat.backend.dto.PaginatedResponse;
 import dev.rnborges.webchat.backend.model.Message;
 import dev.rnborges.webchat.backend.service.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,16 @@ public class MessageController {
      * @return A paginated response of messages.
      */
     @GetMapping
-    public ResponseEntity<Page<MessageResponse>> getChatMessages(
+    public ResponseEntity<PaginatedResponse<MessageResponse>> getChatMessages(
             @RequestParam("chatId") UUID chatId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size
     ) {
-        log.info("Fetching message history for chat ID: {} with page: {} and size: {}", chatId, page, size);
+        log.info("Fetching message history for chat ID: {}...", chatId);
 
         Page<Message> messagePage = chatService.getChatHistory(chatId, page, size);
-
         Page<MessageResponse> messageResponsePage = messagePage.map(MessageResponse::fromEntity);
 
-        return ResponseEntity.ok(messageResponsePage);
+        return ResponseEntity.ok(PaginatedResponse.fromPage(messageResponsePage));
     }
 }

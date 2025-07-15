@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth.js';
 
 /**
  * Renders a single chat message bubble.
@@ -19,7 +19,7 @@ const Message = ({ message }) => {
         : 'col-start-1 col-end-8'; // Received messages align to the left
 
     const bubbleClasses = isSentByCurrentUser
-        ? 'bg-teal-custom text-white' // Sent messages have a custom color
+        ? 'bg-teal-custom text-gray bg-white' // Sent messages have a custom color
         : 'bg-white text-gray-700'; // Received messages have a white background
 
     return (

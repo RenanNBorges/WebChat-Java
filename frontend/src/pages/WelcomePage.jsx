@@ -13,7 +13,7 @@ const WelcomePage = () => {
             className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center p-4 text-white"
             style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${backgroundImage})` }}
         >
-            <img className="text-green-font" src={logo} alt="Foot Chat Logo" className="w-24 h-24 mb-4" />
+            <img className="text-green-font w-24 h-24 mb-4" src={logo} alt="Foot Chat Logo" />
             <h1 className="text-5xl md:text-6xl font-bold">Foot Chat</h1>
             <p className="mt-4 text-xl md:text-2xl text-center max-w-2xl">
                 A sua plataforma para discutir táticas, celebrar vitórias e conectar-se com outros fãs de futebol.

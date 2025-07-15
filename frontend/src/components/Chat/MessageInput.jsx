@@ -1,59 +1,79 @@
 import React, { useState } from 'react';
-import './MessageInput.css'; // 1. Importar o nosso novo ficheiro CSS
+import { useAuth } from '../../hooks/useAuth';
+import { useWebSocket } from '../../hooks/useWebSocket';
+import { MessageType } from '../../websocket/ChatMessage';
+import './MessageInput.css';
 import btnBall from '../../assets/images/btn-ball.svg';
+import { STOMP_SEND_DESTINATIONS } from '../../utils/constants';
 
 /**
- * Renderiza o formulário de input de mensagem, com um botão de envio animado.
+ * Renderiza o formulário de input, agora com a lógica completa para enviar mensagens.
+ * @param {{ selectedChat: object }} props
  * @returns {JSX.Element}
  */
-const MessageInput = () => {
-    const [message, setMessage] = useState('');
-
-    // 2. Estado para controlar o ciclo de vida da animação.
+const MessageInput = ({ selectedChat }) => {
+    const [content, setContent] = useState('');
     const [isAnimating, setIsAnimating] = useState(false);
+    const { user } = useAuth(); // Obtém o utilizador autenticado
+    const { websocketService, isConnected } = useWebSocket(); // Obtém o nosso serviço de WebSocket
 
+    /**
+     * Handles the form submission to send a new message.
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (message.trim() === '' || isAnimating) return; // Previne múltiplos cliques
+        // Valida se há conteúdo e se a conexão está ativa
+        if (content.trim() === '' || isAnimating || !isConnected || !selectedChat) {
+            return;
+        }
 
-        // 3. Inicia a animação
+        // TODO: Eu preciso de construir o DTO ChatMessage a ser enviado.
+        const chatMessagePayload = {
+            type: MessageType.CHAT,
+            content: content,
+            senderId: user.id,
+            senderUsername: user.username,
+            chatId: selectedChat.id,
+            // O status será definido pelo backend
+        };
+
+        // TODO: Eu preciso de usar o websocketService para enviar a mensagem.
+        websocketService.sendMessage(
+            STOMP_SEND_DESTINATIONS.SEND_MESSAGE,
+            chatMessagePayload
+        );
+
+        // Inicia a animação e limpa o estado
         setIsAnimating(true);
-
-        // TODO: (Milestone 6) A lógica de envio do WebSocket virá aqui.
-        console.log("Sending message:", message);
-
-        // 4. Lógica de temporização para a animação
         setTimeout(() => {
-            setMessage(''); // Limpa o input
-            setIsAnimating(false); // Reseta o estado, fazendo a bola reaparecer
-        }, 400); // O tempo deve corresponder à duração da animação 'roll-out'
+            setContent('');
+            setIsAnimating(false);
+        }, 400);
     };
 
     return (
         <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
             <div className="flex-grow">
-                <div className="relative w-full">
+                <form onSubmit={handleSubmit}>
                     <input
                         type="text"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
                         className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
-                        placeholder="Escreva a sua mensagem..."
+                        placeholder={isConnected ? "Escreva a sua mensagem..." : "A conectar..."}
+                        disabled={!isConnected}
                     />
-                </div>
+                </form>
             </div>
             <div className="ml-4">
                 <button
                     onClick={handleSubmit}
                     className="focus:outline-none"
-                    // Desativa o botão durante a animação para prevenir cliques duplos
-                    disabled={isAnimating}
+                    disabled={isAnimating || !isConnected || content.trim() === ''}
                 >
                     <img
                         src={btnBall}
                         alt="Enviar Mensagem"
-                        // 5. Aplica a classe de animação condicionalmente
                         className={`w-10 h-10 transition-transform duration-150 ease-in-out transform hover:scale-110 ${
                             isAnimating ? 'animate-roll-out' : 'animate-zoom-in'
                         }`}

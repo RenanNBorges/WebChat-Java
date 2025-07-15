@@ -7,7 +7,6 @@ import { ENDPOINTS } from '../utils/constants';
 export const chatService = {
     /**
      * Busca a lista de todos os chats para o utilizador autenticado.
-     * @returns {Promise<Array>} Uma promessa que resolve para um array de chats.
      */
     getUserChats: async () => {
         try {
@@ -21,14 +20,12 @@ export const chatService = {
 
     /**
      * Busca o histórico de mensagens para um chat específico com paginação.
-     * @param {string} chatId - O ID do chat.
-     * @param {number} page - O número da página.
-     * @param {number} size - O tamanho da página.
-     * @returns {Promise<object>} Uma promessa que resolve para um objeto de página de mensagens.
      */
     getChatMessages: async (chatId, page = 0, size = 50) => {
         try {
-            const response = await apiClient.get(ENDPOINTS.CHATS.MESSAGES, {
+            // ✅ CORREÇÃO: Usar a constante correta do endpoint de mensagens.
+            // O caminho correto é ENDPOINTS.MESSAGES.BY_CHAT, que corresponde a '/messages'.
+            const response = await apiClient.get(ENDPOINTS.MESSAGES.BY_CHAT, {
                 params: { chatId, page, size }
             });
             return response.data;

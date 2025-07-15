@@ -22,36 +22,40 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
 
-    /**
-     * This method is called before a message is sent to a channel.
-     * We will use it to intercept the CONNECT command and authenticate the user.
-     * @param message The message being sent.
-     * @param channel The channel the message is being sent to.
-     * @return The message, possibly modified, or null if the message should be dropped.
-     */
     @Override
-    public Message<?> preSend(Message<?> message,
-                              MessageChannel channel){
-        final StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        final StompHeaderAccessor accessor =
+                MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        // Check if the message have authorization and a valid username
+        //  Adicione logs para ver o que está a acontecer
+        log.info("Headers do Interceptor: {}", accessor.getMessageHeaders());
+
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+            log.info("Comando CONNECT recebido. A processar autenticação...");
+
             final String authHeader = accessor.getFirstNativeHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                final String token = authHeader.substring(7);
-                final String username = jwtTokenProvider.extractUsername(token);
+                final String jwt = authHeader.substring(7);
+                final String username = jwtTokenProvider.extractUsername(jwt);
+
+                log.info("Token extraído para o utilizador: {}", username);
 
                 if (username != null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    if (jwtTokenProvider.isTokenValid(token)) {
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                    if (jwtTokenProvider.isTokenValid(jwt)) {
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities()
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
                         );
-
                         accessor.setUser(authToken);
-                        log.info("Authentication successful to WebSOcket session for user: ", username);
+                        log.info("Utilizador '{}' autenticado com sucesso para a sessão WebSocket.", username);
+                    } else {
+                        log.warn("Falha na validação do token JWT para o utilizador: {}", username);
                     }
                 }
+            } else {
+                log.warn("Cabeçalho de Autorização em falta ou mal formatado no comando CONNECT.");
             }
         }
         return message;

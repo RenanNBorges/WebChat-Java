@@ -29,7 +29,7 @@ const ChatRoom = ({ selectedChat }) => {
                     </div>
 
                     <div className="p-4">
-                        <MessageInput />
+                        <MessageInput selectedChat={selectedChat} />
                     </div>
                 </div>
             </FieldBackground>
