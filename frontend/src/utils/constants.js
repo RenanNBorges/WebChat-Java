@@ -7,7 +7,7 @@ export const API_BASE_URL = '/api';
 /**
  * A URL WebSocket.
  */
-export const WEBSOCKET_URL = 'ws://localhost:8080/ws';
+export const WEBSOCKET_URL = 'ws://192.168.0.181:8080/ws';
 
 /**
  * Um objeto que contém todos os caminhos relativos dos nossos endpoints REST.

@@ -1,48 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useAuth } from '../../hooks/useAuth';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { chatService } from '../../services/chatService';
 import { STOMP_SUBSCRIBE_TOPICS } from '../../utils/constants';
-
-/**
- * Renderiza uma única bolha de mensagem de chat.
- * Determina o alinhamento e o estilo com base no remetente.
- * @param {{ message: object }} props
- * @returns {JSX.Element}
- */
-const Message = ({ message }) => {
-    const { user } = useAuth();
-
-    // Verifica se a mensagem foi enviada pelo utilizador atualmente logado.
-    const isSentByCurrentUser = message.sender.id === user.id;
-
-    const messageContainerClasses = isSentByCurrentUser
-        ? 'col-start-6 col-end-13 p-3 rounded-lg' // Mensagens enviadas alinham à direita
-        : 'col-start-1 col-end-8 p-3 rounded-lg'; // Mensagens recebidas alinham à esquerda
-
-    const messageBubbleClasses = isSentByCurrentUser
-        ? 'bg-teal-custom text-white' // Cor para mensagens enviadas
-        : 'bg-white text-gray-600'; // Cor para mensagens recebidas
-
-    return (
-        <div className={messageContainerClasses}>
-            <div className={`flex items-start ${isSentByCurrentUser ? 'justify-end flex-row-reverse' : 'flex-row'}`}>
-                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0 text-white font-bold">
-                    {message.sender.username.charAt(0).toUpperCase()}
-                </div>
-                <div className={`relative mx-3 text-sm py-2 px-4 shadow rounded-xl ${messageBubbleClasses}`}>
-                    {!isSentByCurrentUser && (
-                        <p className="font-bold text-teal-custom">{message.sender.username}</p>
-                    )}
-                    <p className="text-base break-words">{message.content}</p>
-                    <p className={`text-xs text-right mt-1 ${isSentByCurrentUser ? 'text-gray-300' : 'text-gray-400'}`}>
-                        {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-};
+import Message from "./Message.jsx";
+import {useNotifications} from "../../hooks/useNotifications.js";
 
 /**
  * Busca, exibe e atualiza a lista de mensagens para um chat selecionado.
@@ -53,6 +14,7 @@ const MessageList = ({ chat }) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const { websocketService, isConnected } = useWebSocket();
+    const { handleNewMessageReceived } = useNotifications();
     const messagesEndRef = useRef(null); // Referência para o final da lista
 
     /**
@@ -87,6 +49,30 @@ const MessageList = ({ chat }) => {
 
         fetchMessages();
     }, [chat]);
+
+
+    useEffect(() => {
+        if (!chat?.id || !isConnected) return;
+        const chatTopic = STOMP_SUBSCRIBE_TOPICS.CHAT(chat.id);
+
+        const onNewMessage = (newMessage) => {
+            // Delega a lógica de notificação para o nosso sistema centralizado
+            handleNewMessageReceived(newMessage);
+
+            setMessages(prevMessages => {
+                if (prevMessages.find(msg => msg.id === newMessage.id)) {
+                    return prevMessages;
+                }
+                return [...prevMessages, newMessage];
+            });
+        };
+
+        const subscription = websocketService.subscribe(chatTopic, onNewMessage);
+        return () => {
+            websocketService.unsubscribe(subscription);
+        };
+    }, [chat, isConnected, websocketService, handleNewMessageReceived]);
+
 
     /**
      * Efeito para subscrever e cancelar a subscrição do tópico do WebSocket.
