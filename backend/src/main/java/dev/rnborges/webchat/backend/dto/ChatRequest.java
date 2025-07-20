@@ -7,6 +7,7 @@ import lombok.Data;
 import java.util.List;
 import java.util.UUID;
 
+
 @Data
 public class ChatRequest {
     @Size(max = 100, message = "The group name cannot exceed 100 characters.")

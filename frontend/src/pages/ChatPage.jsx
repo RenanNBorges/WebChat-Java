@@ -1,59 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../hooks/useAuth.js';
-import ChatList from '../components/Chat/ChatList.jsx';
-import ChatRoom from '../components/Chat/ChatRoom.jsx';
-import { chatService } from '../services/chatService';
-import { useWebSocket } from '../hooks/useWebSocket';
+import React, { useEffect } from 'react';
+import { useChatStore } from '../stores/chatStore';
+import ChatList from '../features/chat/components/ChatList';
+import ChatRoom from '../features/chat/components/ChatRoom';
 
+/**
+ * A página principal do chat, que monta a interface lado a lado.
+ */
 const ChatPage = () => {
-    const { user } = useAuth();
-    const [chats, setChats] = useState([]);
-    const [selectedChat, setSelectedChat] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const { isConnected } = useWebSocket();
+    const fetchChats = useChatStore((state) => state.fetchChats);
 
     useEffect(() => {
-        const fetchUserChats = async () => {
-            if (user) {
-                try {
-                    setLoading(true);
-                    // Agora, usamos o nosso serviço para buscar os dados reais!
-                    const userChats = await chatService.getUserChats();
-                    setChats(userChats);
-                } catch (error) {
-                    console.error("Falha ao buscar os chats", error);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-
-        fetchUserChats();
-    }, [user]);
-
-    const handleSelectChat = (chat) => {
-        setSelectedChat(chat);
-    };
+        fetchChats();
+    }, [fetchChats]);
 
     return (
-
+        // Container principal que ocupa toda a tela
         <div className="flex h-screen antialiased text-gray-800">
-            <div className="flex items-center">
-                <span className={`h-3 w-3 rounded-full mr-2 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                <span>{isConnected ? 'Conectado' : 'A conectar...'}</span>
-            </div>
             <div className="flex flex-row h-full w-full overflow-x-hidden">
-
-                <ChatList
-                    chats={chats}
-                    selectedChat={selectedChat}
-                    onSelectChat={handleSelectChat}
-                    loading={loading}
-                />
-
-                <ChatRoom
-                    selectedChat={selectedChat}
-                />
+                {/* A barra lateral com a lista de chats */}
+                <ChatList />
+                {/* A sala de chat principal, que ocupa o restante do espaço */}
+                <ChatRoom />
             </div>
         </div>
     );

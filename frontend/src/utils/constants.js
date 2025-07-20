@@ -1,62 +1,38 @@
-/**
- * O baseURL da nossa API REST.
- * O proxy do Vite irá reencaminhar qualquer chamada que comece com /api.
- */
+// A URL base para a conexão WebSocket.
+// O Vite irá usar o proxy configurado em vite.config.js durante o desenvolvimento.
+// Em produção, esta URL pode precisar ser absoluta (ex: wss://seu-dominio.com/ws).
+export const WEBSOCKET_URL = import.meta.env.DEV
+    ? `ws://${window.location.host}/ws`
+    : 'wss://SUA_URL_DE_PRODUCAO/ws'; // TODO: Substituir pela URL de produção
+
+// A URL base para a nossa API REST.
+// O proxy do Vite cuida disso em desenvolvimento.
 export const API_BASE_URL = '/api';
 
-/**
- * A URL WebSocket.
- */
-export const WEBSOCKET_URL = 'ws://192.168.0.181:8080/ws';
-
-/**
- * Um objeto que contém todos os caminhos relativos dos nossos endpoints REST.
- */
+// Endpoints da API REST para manter o código limpo e organizado.
 export const ENDPOINTS = {
     AUTH: {
         LOGIN: '/auth/login',
         REGISTER: '/auth/register',
-    },
-    USERS: {
-        GET_PROFILE: '/users/me',
+        PROFILE: '/users/me',
     },
     CHATS: {
-        BASE: '/chats',
+        BASE: '/chats', // Para buscar a lista de chats
+        MESSAGES: '/messages', // Para buscar mensagens de um chat (ex: /messages?chatId=...)
     },
-    MESSAGES: {
-        BY_CHAT: '/messages', // Ex: /api/messages?chatId=...
-    }
 };
 
-// --- NOVAS CONSTANTES PARA A MILESTONE 6 ---
-
-/**
- * Destinos do STOMP para onde o cliente envia mensagens (prefixo /app).
- */
+// Destinos STOMP para onde o cliente ENVIA mensagens.
 export const STOMP_SEND_DESTINATIONS = {
     SEND_MESSAGE: '/app/chat.sendMessage',
     ADD_USER: '/app/chat.addUser',
-    // TODO: Eu vou adicionar aqui o destino para os eventos de "a digitar...".
+    // Futuramente: '/app/chat.typing'
 };
 
-/**
- * Tópicos do STOMP que o cliente subscreve para receber mensagens.
- */
+// Tópicos STOMP que o cliente SUBSCREVE para RECEBER mensagens.
 export const STOMP_SUBSCRIBE_TOPICS = {
-    /**
-     * O tópico público para eventos gerais (ex: utilizador entrou/saiu).
-     */
-    PUBLIC: '/topic/public',
-    /**
-     * Uma função que gera o caminho do tópico dinâmico para um chat específico.
-     * @param {string} chatId - O ID do chat.
-     * @returns {string} O caminho completo do tópico.
-     */
+    // Função que gera o tópico dinâmico para um chat específico.
     CHAT: (chatId) => `/topic/chat/${chatId}`,
-    /**
-     * Uma função que gera o caminho para receber mensagens privadas/notificações.
-     * @param {string} userId - O ID do utilizador.
-     * @returns {string} O caminho completo da fila do utilizador.
-     */
-    USER_QUEUE: (userId) => `/user/${userId}/queue/messages`,
+    // Futuramente para notificações privadas:
+    // USER_QUEUE: (userId) => `/user/${userId}/queue/notifications`,
 };

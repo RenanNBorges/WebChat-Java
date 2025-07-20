@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,6 +16,7 @@ public class MessageResponse {
     private UserResponse sender;
     private LocalDateTime timestamp;
     private MessageStatus status;
+    private UUID chatId;
 
     public static MessageResponse fromEntity(Message message) {
         return MessageResponse.builder()
@@ -23,6 +25,7 @@ public class MessageResponse {
                 .sender(UserResponse.fromEntity(message.getSender()))
                 .timestamp(message.getTimestamp())
                 .status(message.getStatus())
+                .chatId(message.getChat().getId())
                 .build();
     }
 }

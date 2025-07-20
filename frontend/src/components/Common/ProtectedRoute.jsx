@@ -1,29 +1,31 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth.js';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../../stores/authStore';
+import Spinner from '../UI/Spinner';
 
 /**
- * A guard component that checks for user authentication.
- * If the user is authenticated, it renders the child components.
- * Otherwise, it redirects the user to the welcome page.
- * @param {object} props
- * @param {React.ReactNode} props.children - The component to render if authenticated.
- * @returns {JSX.Element}
+ * Protege uma rota, permitindo o acesso apenas a utilizadores autenticados.
+ * Enquanto verifica a autenticação, exibe um spinner.
+ * Se não estiver autenticado, redireciona para a página de boas-vindas.
  */
 const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading } = useAuthStore();
+    const location = useLocation();
 
-    // While the context is performing the initial token check, don't render anything.
     if (loading) {
-        return null; // Or a loading spinner
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <Spinner size="lg" />
+            </div>
+        );
     }
 
-    // If not authenticated, redirect to the welcome page.
     if (!isAuthenticated) {
-        return <Navigate to="/welcome" replace />;
+        // Redireciona para a página de boas-vindas, guardando a localização
+        // para que o utilizador possa ser redirecionado de volta após o login.
+        return <Navigate to="/welcome" state={{ from: location }} replace />;
     }
 
-    // If authenticated, render the requested component.
     return children;
 };
 

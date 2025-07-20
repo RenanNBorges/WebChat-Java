@@ -34,30 +34,25 @@ public class ChatRestController {
             @Valid @RequestBody ChatRequest chatRequest,
             @AuthenticationPrincipal User currentUser
     ) {
-
         Chat createdChat = chatService.createChat(chatRequest, currentUser);
-        log.info("User {} is creating a new chat group: {} with name '{}' and ID: {}", createdChat.isGroup(), currentUser.getUsername(), createdChat.getName(), createdChat.getId());
-
-        // Return a 201 Created status, which is the REST standard for successful resource creation.
-        return new ResponseEntity<>(ChatResponse.fromEntity(createdChat), HttpStatus.CREATED);
+        log.info("User {} is creating a new chat with ID: {}", currentUser.getUsername(), createdChat.getId());
+        return new ResponseEntity<>(ChatResponse.fromEntity(createdChat, currentUser), HttpStatus.CREATED);
     }
 
     /**
      * Fetches all chats (groups and private) for the currently authenticated user.
-     * @param currentUser The currently authenticated user, injected by Spring.
-     * @return A list of chats.
+     * The name of private chats is dynamically set to the other participant's name.
+     * @param currentUser The authenticated user, injected by Spring.
+     * @return A list of formatted chats.
      */
     @GetMapping
     public ResponseEntity<List<ChatResponse>> getUserChats(@AuthenticationPrincipal User currentUser) {
-
-        log.info("Fetching chats for users: {}", currentUser.getUsername());
-
+        log.info("Fetching chats for user: {}", currentUser.getUsername());
         List<Chat> chats = chatService.getUserChats(currentUser.getId());
-
         List<ChatResponse> chatResponses = chats.stream()
-                .map(ChatResponse::fromEntity)
+                .map(chat -> ChatResponse.fromEntity(chat, currentUser))
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(chatResponses);
     }
+
 }
