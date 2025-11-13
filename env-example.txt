@@ -1,0 +1,11 @@
+# Credenciais do PostgreSQL
+POSTGRES_USER=webchat
+POSTGRES_PASSWORD=webchat123
+POSTGRES_DB=webchat
+
+# Credenciais do RabbitMQ
+RABBITMQ_USER=webchat
+RABBITMQ_PASS=webchat123
+
+# Host de desenvolvimento (usado pelo Nginx)
+APP_HOST=localhost

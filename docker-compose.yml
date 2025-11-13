@@ -1,88 +1,89 @@
-version: '3.8'
-
 services:
-  # Serviço do Banco de Dados PostgreSQL
+
   postgres:
-    image: postgres:15 # Imagem oficial do PostgreSQL
-    container_name: webchat-postgres
+    image: postgres:latest
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: webchat # Nome do banco a ser criado
-      POSTGRES_USER: webchat # Usuário
-      POSTGRES_PASSWORD: webchat123 # Senha
-    ports:
-      - "5432:5432" # Mapeia a porta do container para a máquina host
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Persiste os dados do banco
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - webchat-network
-    healthcheck: # Verifica se o banco está pronto para aceitar conexões
-      test: ["CMD-SHELL", "pg_isready -U webchat"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Serviço de Cache em Memória
   redis:
-    image: redis:7-alpine # Imagem oficial e leve do Redis
-    container_name: webchat-redis
-    ports:
-      - "6379:6379"
+    image: redis:latest
+    restart: unless-stopped
     volumes:
-      - redis_data:/data # Persiste dados do Redis (opcional)
+      - redis_data:/data
     networks:
       - webchat-network
-    healthcheck: # Verifica se o Redis está respondendo
+    healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Serviço de Mensageria
   rabbitmq:
-    image: rabbitmq:3-management # Imagem com a interface de gerenciamento incluída
-    container_name: webchat-rabbitmq
+    image: rabbitmq:latest
+    restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: webchat
-      RABBITMQ_DEFAULT_PASS: webchat123
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     ports:
-      - "5672:5672" # Porta do protocolo AMQP
-      - "15672:15672" # Porta da interface de gerenciamento web
+      - "15672:15672"
     networks:
       - webchat-network
-    healthcheck: # Verifica se o RabbitMQ está funcional
+    healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-      
-     # Backend Spring Boot
+
   backend:
     build: ./backend
-    ports:
-      - "8080:8080"
+    restart: unless-stopped
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
-    # Esta secção de environment é crucial
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
-      # 1. Ativa o perfil 'docker' no nosso application.yml
-      - SPRING_PROFILES_ACTIVE=docker 
-      # 2. Fornece as variáveis que o perfil 'docker' espera
+      - SPRING_PROFILES_ACTIVE=docker
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_NAME=webchat
-      - DB_USERNAME=webchat
-      - DB_PASSWORD=webchat123
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USERNAME=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
-      - RABBITMQ_USERNAME=webchat
-      - RABBITMQ_PASSWORD=webchat123
+      - RABBITMQ_USERNAME=${RABBITMQ_USER}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
     networks:
       - webchat-network
 
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - webchat-network
 
 volumes:
   postgres_data:
